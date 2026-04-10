@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitScan — GitHub Profile Analyzer</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+      </div>
+      <span class="brand-name">GitScan</span>
+      <span class="brand-tag">v1.0</span>
+    </div>
+    <div class="header-right">
+      <span class="api-status" id="api-status">
+        <span class="status-dot"></span>
+        GitHub API
+      </span>
+    </div>
+  </header>
+
+  <!-- ── Search Screen ── -->
+  <div class="screen" id="screen-search">
+    <div class="search-hero">
+      <div class="search-eyebrow">GitHub Profile Analyzer</div>
+      <h1 class="search-title">Scan any<br><em>GitHub profile</em></h1>
+      <p class="search-sub">Enter a username to analyze repositories,<br>languages, stars and activity.</p>
+
+      <div class="search-box">
+        <span class="search-prefix">github.com /</span>
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="username"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="search-btn" id="search-btn">
+          <span class="search-btn-text">Scan</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="search-suggestions">
+        <span class="suggestions-label">Try:</span>
+        <button class="suggestion-pill" data-user="torvalds">torvalds</button>
+        <button class="suggestion-pill" data-user="gaearon">gaearon</button>
+        <button class="suggestion-pill" data-user="sindresorhus">sindresorhus</button>
+        <button class="suggestion-pill" data-user="addyosmani">addyosmani</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Loading Screen ── -->
+  <div class="screen hidden" id="screen-loading">
+    <div class="loading-wrap">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loading-text">Fetching profile...</div>
+      <div class="loading-sub">Connecting to GitHub API</div>
+    </div>
+  </div>
+
+  <!-- ── Error Screen ── -->
+  <div class="screen hidden" id="screen-error">
+    <div class="error-wrap">
+      <div class="error-code">404</div>
+      <div class="error-title">User not found</div>
+      <div class="error-sub" id="error-msg">The username you entered doesn't exist on GitHub.</div>
+      <button class="btn-back" id="error-back-btn">← Try another username</button>
+    </div>
+  </div>
+
+  <!-- ── Profile Screen ── -->
+  <div class="screen hidden" id="screen-profile">
+
+    <!-- Profile top bar -->
+    <div class="profile-topbar">
+      <button class="back-btn" id="back-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        New Search
+      </button>
+      <a class="github-link" id="github-link" href="#" target="_blank" rel="noopener">
+        View on GitHub
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 10L10 2M10 2H4M10 2v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="profile-layout">
+
+      <!-- LEFT: User card -->
+      <aside class="profile-aside">
+
+        <div class="user-card">
+          <div class="avatar-wrap">
+            <img class="avatar" id="avatar" src="" alt="avatar" />
+            <div class="avatar-ring"></div>
+          </div>
+          <div class="user-name" id="user-name">—</div>
+          <div class="user-login" id="user-login">@—</div>
+          <p class="user-bio" id="user-bio"></p>
+
+          <div class="user-meta">
+            <div class="meta-item" id="meta-location" style="display:none">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5C4.567 1.5 3 3.067 3 5c0 2.5 3.5 6.5 3.5 6.5S10 7.5 10 5c0-1.933-1.567-3.5-3.5-3.5z" stroke="currentColor" stroke-width="1.2"/><circle cx="6.5" cy="5" r="1" fill="currentColor"/></svg>
+              <span id="location-text"></span>
+            </div>
+            <div class="meta-item" id="meta-company" style="display:none">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="4" width="9" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.2"/></svg>
+              <span id="company-text"></span>
+            </div>
+            <div class="meta-item" id="meta-blog" style="display:none">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5.5 7.5a3 3 0 0 0 4.243 0l1.414-1.414a3 3 0 0 0-4.243-4.243L6 2.757" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M7.5 5.5a3 3 0 0 0-4.243 0L1.843 6.914a3 3 0 0 0 4.243 4.243L7 10.243" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              <a class="meta-link" id="blog-link" href="#" target="_blank"></a>
+            </div>
+            <div class="meta-item" id="meta-twitter" style="display:none">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M12 2.5a5 5 0 0 1-1.5.4 2.5 2.5 0 0 0 1.1-1.4 5 5 0 0 1-1.6.6A2.5 2.5 0 0 0 1.8 4.4 7 7 0 0 1 .8 2.6a2.5 2.5 0 0 0 .8 3.3 2.5 2.5 0 0 1-1.1-.3v.03a2.5 2.5 0 0 0 2 2.5 2.5 2.5 0 0 1-1.1 0 2.5 2.5 0 0 0 2.3 1.7A5 5 0 0 1 .5 10.5a7 7 0 0 0 3.8 1.1c4.5 0 7-3.7 7-7v-.3A5 5 0 0 0 12 2.5z" fill="currentColor"/></svg>
+              <span id="twitter-text"></span>
+            </div>
+            <div class="meta-item">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M1 5h11" stroke="currentColor" stroke-width="1.2"/></svg>
+              <span id="joined-text"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Follower stats -->
+        <div class="follow-stats">
+          <div class="follow-stat">
+            <span class="follow-val" id="followers-val">0</span>
+            <span class="follow-label">Followers</span>
+          </div>
+          <div class="follow-divider"></div>
+          <div class="follow-stat">
+            <span class="follow-val" id="following-val">0</span>
+            <span class="follow-label">Following</span>
+          </div>
+          <div class="follow-divider"></div>
+          <div class="follow-stat">
+            <span class="follow-val" id="repos-val">0</span>
+            <span class="follow-label">Repos</span>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- RIGHT: Data panels -->
+      <div class="profile-main">
+
+        <!-- Stat cards -->
+        <div class="stat-cards" id="stat-cards">
+          <div class="stat-card">
+            <div class="scard-icon">⭐</div>
+            <div class="scard-val" id="total-stars">0</div>
+            <div class="scard-label">Total Stars</div>
+          </div>
+          <div class="stat-card">
+            <div class="scard-icon">🍴</div>
+            <div class="scard-val" id="total-forks">0</div>
+            <div class="scard-label">Total Forks</div>
+          </div>
+          <div class="stat-card">
+            <div class="scard-icon">👁</div>
+            <div class="scard-val" id="total-watchers">0</div>
+            <div class="scard-label">Watchers</div>
+          </div>
+          <div class="stat-card">
+            <div class="scard-icon">📦</div>
+            <div class="scard-val" id="total-size">0</div>
+            <div class="scard-label">Total KB</div>
+          </div>
+        </div>
+
+        <!-- Language breakdown -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Language Breakdown</span>
+            <span class="panel-sub" id="lang-repo-count"></span>
+          </div>
+          <div class="lang-bar-wrap" id="lang-bar"></div>
+          <div class="lang-legend" id="lang-legend"></div>
+        </div>
+
+        <!-- Top repositories -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Top Repositories</span>
+            <span class="panel-sub">by stars</span>
+          </div>
+          <div class="repo-list" id="repo-list"></div>
+        </div>
+
+        <!-- Recent activity -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Recently Updated</span>
+            <span class="panel-sub">last 5 repos</span>
+          </div>
+          <div class="recent-list" id="recent-list"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <div class="footer-content">
+      Dev by Dušan
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
